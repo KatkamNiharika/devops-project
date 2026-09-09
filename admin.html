@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EventVerify – Admin Portal</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  </head>
+  <body class="admin-page has-bg">
+    <div class="bg-grid"></div>
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+
+    <!-- ══ LOGIN ══ -->
+    <div class="screen active" id="screen-login">
+      <div class="auth-wrap">
+        <div class="auth-box admin-box">
+          <div class="auth-logo"></div>
+          <div class="auth-title">Admin Login</div>
+          <div class="auth-sub tight">
+            Sign in to manage events and attendance
+          </div>
+          <div class="cred-hint">
+            Email:
+            <strong
+              ><a
+                href="/cdn-cgi/l/email-protection"
+                class="__cf_email__"
+                data-cfemail="3b5a5f5652557b5c565a525715585456"
+                >[email&#160;protected]</a
+              ></strong
+            >
+            &nbsp;·&nbsp; Password:
+            <strong>admin123</strong>
+          </div>
+          <div class="field">
+            <label>Admin Email</label
+            ><input type="email" id="al-email" placeholder="admin@gmail.com" />
+          </div>
+          <div class="field">
+            <label>Password</label
+            ><input type="password" id="al-pass" placeholder="admin123" />
+          </div>
+          <button class="btn btn-warn" id="btn-admin-login" onclick="doLogin()">
+            Sign In as Admin →
+          </button>
+          <div class="link-text">
+            <a href="index.html">← Back to Home</a> &nbsp;|&nbsp;
+            <a href="student.html" style="color: var(--accent)"
+              >Student Login</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="screen" id="screen-dashboard">
+      <nav class="navbar">
+        <div class="nav-left">
+          <span class="nav-badge admin">Admin</span>
+        </div>
+        <div class="nav-right">
+          <a class="nav-home" href="index.html">Home</a>
+          <button class="btn-logout" onclick="doLogout()">Logout</button>
+        </div>
+      </nav>
+
+      <div class="main-wrap">
+        <div class="stats-row" id="admin-stats"></div>
+
+        <div class="tabs">
+          <button
+            class="tab active"
+            data-tab="events"
+            onclick="switchTab('events', this)"
+          >
+            📅 Events
+          </button>
+          <button
+            class="tab"
+            data-tab="event-regs"
+            onclick="switchTab('event-regs', this)"
+          >
+            📋 Registrations
+          </button>
+          <button
+            class="tab"
+            data-tab="all-students"
+            onclick="switchTab('all-students', this)"
+          >
+            👥 Students
+          </button>
+          <button
+            class="tab"
+            data-tab="certificates"
+            onclick="switchTab('certificates', this)"
+          >
+            🎓 Certificates
+          </button>
+        </div>
+
+        <!-- EVENTS TAB -->
+        <div id="tab-events">
+          <div class="top-bar">
+            <div class="page-header">
+              <h1>Manage Events</h1>
+              <p>
+                Create, edit and delete events. Changes reflect instantly on
+                student portal.
+              </p>
+            </div>
+            <button
+              class="btn btn-success btn-sm"
+              style="padding: 10px 22px; font-size: 13px"
+              onclick="openAddEvent()"
+            >
+              + Add New Event
+            </button>
+          </div>
+          <div class="events-grid admin-grid" id="admin-events-grid">
+            <div class="loading-state" style="grid-column: 1/-1">
+              Loading events…
+            </div>
+          </div>
+        </div>
+
+        <!-- REGISTRATIONS TAB -->
+        <div id="tab-event-regs" style="display: none">
+          <div class="page-header" style="margin-bottom: 18px">
+            <h1>Event Registrations</h1>
+            <p>
+              View all students registered per event. Mark attendance or delete
+              entries.
+            </p>
+          </div>
+          <div class="filter-row">
+            <label>Event:</label>
+            <select id="ev-reg-filter" onchange="renderEventRegsTable()">
+              <option value="">All Events</option>
+            </select>
+            <label>Status:</label>
+            <select id="ev-reg-status" onchange="renderEventRegsTable()">
+              <option value="">All</option>
+              <option value="registered">Pending</option>
+              <option value="attended">Attended</option>
+            </select>
+            <label>Role:</label>
+            <select id="ev-reg-role" onchange="renderEventRegsTable()">
+              <option value="">All Roles</option>
+              <option value="participant">Participant</option>
+              <option value="organizer">Organizer</option>
+            </select>
+            <input
+              type="text"
+              id="ev-reg-search"
+              placeholder="🔍 Search name / roll…"
+              oninput="renderEventRegsTable()"
+              style="min-width: 200px"
+            />
+          </div>
+          <div
+            id="ev-reg-count"
+            style="font-size: 13px; color: var(--sub); margin-bottom: 12px"
+          ></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Roll No.</th>
+                  <th>Email</th>
+                  <th>Branch</th>
+                  <th>College</th>
+                  <th>Event</th>
+                  <th>Role</th>
+                  <th>Date</th>
+                  <th>Attendance</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="ev-regs-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- STUDENTS TAB -->
+        <div id="tab-all-students" style="display: none">
+          <div class="page-header" style="margin-bottom: 18px">
+            <h1>Registered Students</h1>
+            <p>
+              All students with accounts on EventVerify. Delete to remove
+              permanently.
+            </p>
+          </div>
+          <div class="filter-row">
+            <input
+              type="text"
+              id="ws-search"
+              placeholder="🔍 Search name / roll / email…"
+              oninput="renderWebsiteStudents()"
+              style="min-width: 260px"
+            />
+          </div>
+          <div
+            id="ws-count"
+            style="font-size: 13px; color: var(--sub); margin-bottom: 12px"
+          ></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Roll No.</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Branch</th>
+                  <th>College</th>
+                  <th>Joined</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="ws-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CERTIFICATES TAB -->
+        <div id="tab-certificates" style="display: none">
+          <div class="top-bar">
+            <div class="page-header" style="margin: 0">
+              <h1>Certificate Approvals</h1>
+              <p>
+                Organizers submit results — you review and approve certificates
+                before students can download them.
+              </p>
+            </div>
+          </div>
+
+          <!-- Sub-tabs -->
+          <div
+            style="
+              display: flex;
+              gap: 6px;
+              margin-bottom: 20px;
+              background: var(--surface);
+              border: 1px solid var(--border);
+              border-radius: 10px;
+              padding: 4px;
+            "
+          >
+            <button
+              id="cert-sub-pending-btn"
+              onclick="switchCertTab('pending')"
+              style="
+                flex: 1;
+                padding: 8px 14px;
+                border: none;
+                border-radius: 7px;
+                background: var(--card);
+                color: var(--text);
+                font-family: Outfit, sans-serif;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+              "
+            >
+              ⏳ Pending
+              <span
+                id="cert-pending-count"
+                style="
+                  background: #f59e0b30;
+                  color: #f59e0b;
+                  padding: 2px 8px;
+                  border-radius: 20px;
+                  font-size: 11px;
+                  margin-left: 4px;
+                "
+                >0</span
+              >
+            </button>
+            <button
+              id="cert-sub-approved-btn"
+              onclick="switchCertTab('approved')"
+              style="
+                flex: 1;
+                padding: 8px 14px;
+                border: none;
+                border-radius: 7px;
+                background: transparent;
+                color: var(--sub);
+                font-family: Outfit, sans-serif;
+                font-size: 13px;
+                font-weight: 500;
+                cursor: pointer;
+              "
+            >
+              ✅ Approved
+              <span
+                id="cert-approved-count"
+                style="
+                  background: #22d3a520;
+                  color: #22d3a5;
+                  padding: 2px 8px;
+                  border-radius: 20px;
+                  font-size: 11px;
+                  margin-left: 4px;
+                "
+                >0</span
+              >
+            </button>
+          </div>
+
+          <!-- Pending certificates -->
+          <div id="cert-tab-pending">
+            <div id="cert-pending-content">
+              <div class="loading-state">Loading certificates…</div>
+            </div>
+          </div>
+
+          <!-- Approved certificates -->
+          <div id="cert-tab-approved" style="display: none">
+            <div id="cert-approved-content">
+              <div class="loading-state">Loading approved certificates…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MODAL: ADD/EDIT EVENT ══ -->
+    <div class="modal-overlay" id="modal-event">
+      <div class="modal">
+        <button class="modal-close" onclick="closeModal('modal-event')">
+          ✕
+        </button>
+        <h2 id="ev-modal-title">Add New Event</h2>
+        <p id="ev-modal-sub">
+          Fill in the event details. Students can register immediately after.
+        </p>
+        <input type="hidden" id="ev-edit-id" />
+        <div class="field">
+          <label>Event Name *</label
+          ><input type="text" id="ev-name" placeholder="e.g. TechFest 2025" />
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Date & Time *</label
+            ><input type="datetime-local" id="ev-time" />
+          </div>
+          <div class="field">
+            <label>Max Capacity</label
+            ><input
+              type="number"
+              id="ev-capacity"
+              placeholder="e.g. 200"
+              min="1"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label>Venue *</label
+          ><input
+            type="text"
+            id="ev-venue"
+            placeholder="e.g. Main Auditorium"
+          />
+        </div>
+        <div class="field">
+          <label>Description</label
+          ><textarea
+            id="ev-desc"
+            rows="3"
+            placeholder="Brief description of the event…"
+          ></textarea>
+        </div>
+        <div
+          class="field"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 10px;
+            padding: 12px 16px;
+          "
+        >
+          <input
+            type="checkbox"
+            id="ev-has-cert"
+            style="
+              width: 18px;
+              height: 18px;
+              accent-color: var(--warn);
+              cursor: pointer;
+              flex-shrink: 0;
+            "
+          />
+          <div>
+            <label
+              for="ev-has-cert"
+              style="
+                display: block;
+                font-size: 13px;
+                font-weight: 600;
+                color: var(--text);
+                text-transform: none;
+                letter-spacing: 0;
+                cursor: pointer;
+              "
+              >🎓 Enable Certificates for this Event</label
+            >
+            <div style="font-size: 11px; color: var(--muted); margin-top: 2px">
+              Organizer can assign participation / winner certificates to
+              attended students
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-success" id="ev-save-btn" onclick="saveEvent()">
+          Add Event →
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ MODAL: DELETE CONFIRM ══ -->
+    <div class="modal-overlay" id="modal-delete">
+      <div class="modal" style="max-width: 380px; text-align: center">
+        <button class="modal-close" onclick="closeModal('modal-delete')">
+          ✕
+        </button>
+        <div
+          style="font-size: 46px; margin-bottom: 12px"
+          id="delete-modal-icon"
+        >
+          🗑️
+        </div>
+        <h2 id="delete-modal-title">Delete Event?</h2>
+        <p id="delete-modal-sub">
+          This will permanently delete the event and all registrations.
+        </p>
+        <div style="display: flex; gap: 10px; margin-top: 20px">
+          <button
+            class="btn btn-ghost"
+            onclick="closeModal('modal-delete')"
+            style="margin-top: 0"
+          >
+            Cancel
+          </button>
+          <button
+            class="btn btn-danger"
+            id="confirm-delete-btn"
+            style="margin-top: 0"
+          >
+            Yes, Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MODAL: EVENT REGISTRATIONS DETAIL ══ -->
+    <div class="modal-overlay" id="modal-ev-detail">
+      <div class="modal" style="max-width: 720px">
+        <button class="modal-close" onclick="closeModal('modal-ev-detail')">
+          ✕
+        </button>
+        <h2 id="ev-detail-title">Event Registrations</h2>
+        <p id="ev-detail-sub"></p>
+        <div
+          id="ev-detail-org-info"
+          style="
+            display: none;
+            background: #22d3a515;
+            border: 1px solid #22d3a540;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: var(--accent2);
+            margin-bottom: 14px;
+          "
+        ></div>
+        <div class="table-wrap" style="margin-top: 10px">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Roll No.</th>
+                <th>Branch</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="ev-detail-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <script src="admin.js"></script>
+  </body>
+</html>

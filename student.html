@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EventVerify – Student Portal</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  </head>
+  <body class="has-bg">
+    <div class="bg-grid"></div>
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+
+    <!-- ══ REGISTER ══ -->
+    <div class="screen" id="screen-register">
+      <div class="auth-wrap">
+        <div class="auth-box wide">
+          <div class="auth-logo"></div>
+          <div class="auth-title">Create Account</div>
+          <div class="auth-sub">Register as a student to access events</div>
+          <div class="field-row">
+            <div class="field">
+              <label>Full Name</label
+              ><input type="text" id="sr-name" placeholder="Your full name" />
+            </div>
+            <div class="field">
+              <label>Roll Number</label
+              ><input type="text" id="sr-roll" placeholder="e.g. 22CS001" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Branch / Dept</label
+              ><input type="text" id="sr-branch" placeholder="e.g. CSE" />
+            </div>
+            <div class="field">
+              <label>College Name</label
+              ><input type="text" id="sr-college" placeholder="Your college" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Phone Number</label
+              ><input
+                type="tel"
+                id="sr-phone"
+                placeholder="10-digit number"
+                maxlength="10"
+              />
+            </div>
+            <div class="field">
+              <label>Email address </label
+              ><input type="email" id="sr-email" placeholder="you@email.com" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Password</label
+            ><input
+              type="password"
+              id="sr-pass"
+              placeholder="Min 6 characters"
+            />
+          </div>
+          <button
+            class="btn btn-primary"
+            id="btn-send-otp"
+            onclick="doSendOTP()"
+          >
+            Send OTP to Email →
+          </button>
+          <div class="link-text">
+            Already registered?
+            <a onclick="showScreen('screen-login')">Sign In</a> &nbsp;|&nbsp;
+            <a href="index.html">← Home</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ OTP ══ -->
+    <div class="screen" id="screen-otp">
+      <div class="auth-wrap">
+        <div class="auth-box">
+          <div class="auth-logo">
+            <div class="logo-icon">🎓</div>
+            <div class="logo-name">EventVerify</div>
+          </div>
+          <div class="auth-title">Verify Email</div>
+          <div class="auth-sub">
+            Enter the 6-digit OTP sent to
+            <strong id="otp-email-display"></strong>
+          </div>
+          <div class="otp-wrap">
+            <input
+              class="otp-digit"
+              id="otp-0"
+              maxlength="1"
+              oninput="otpMove(this, 1)"
+              onkeydown="otpBack(event, 0)"
+            />
+            <input
+              class="otp-digit"
+              id="otp-1"
+              maxlength="1"
+              oninput="otpMove(this, 2)"
+              onkeydown="otpBack(event, 1)"
+            />
+            <input
+              class="otp-digit"
+              id="otp-2"
+              maxlength="1"
+              oninput="otpMove(this, 3)"
+              onkeydown="otpBack(event, 2)"
+            />
+            <input
+              class="otp-digit"
+              id="otp-3"
+              maxlength="1"
+              oninput="otpMove(this, 4)"
+              onkeydown="otpBack(event, 3)"
+            />
+            <input
+              class="otp-digit"
+              id="otp-4"
+              maxlength="1"
+              oninput="otpMove(this, 5)"
+              onkeydown="otpBack(event, 4)"
+            />
+            <input
+              class="otp-digit"
+              id="otp-5"
+              maxlength="1"
+              oninput="otpMove(this, -1)"
+              onkeydown="otpBack(event, 5)"
+            />
+          </div>
+          <div class="otp-timer" id="otp-timer-wrap">
+            Expires in <span id="otp-countdown">10:00</span>
+          </div>
+          <button
+            class="btn btn-primary"
+            id="btn-verify-otp"
+            onclick="doVerifyOTP()"
+          >
+            Verify & Create Account →
+          </button>
+          <button
+            class="btn btn-ghost"
+            id="btn-resend"
+            onclick="doResendOTP()"
+            style="margin-top: 10px"
+          >
+            Resend OTP
+          </button>
+          <div class="link-text">
+            <a onclick="showScreen('screen-register')"
+              >← Back to Registration</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LOGIN ══ -->
+    <div class="screen active" id="screen-login">
+      <div class="auth-wrap">
+        <div class="auth-box">
+          <div class="auth-logo"></div>
+          <div class="auth-title">Student Sign In</div>
+          <div class="auth-sub">
+            Login and select your role for this session
+          </div>
+
+          <div class="field">
+            <label>Email Address</label
+            ><input type="email" id="sl-email" placeholder="you@email.com" />
+          </div>
+          <div class="field">
+            <label>Password</label
+            ><input type="password" id="sl-pass" placeholder="Your password" />
+          </div>
+
+          <div class="field">
+            <label>Login as</label>
+            <div class="role-selector">
+              <button
+                class="role-btn selected"
+                id="role-btn-participant"
+                onclick="selectRole('participant')"
+              >
+                <span class="role-icon">🎓</span>Participant
+              </button>
+              <button
+                class="role-btn"
+                id="role-btn-organizer"
+                onclick="selectRole('organizer')"
+              >
+                <span class="role-icon">🏆</span>Organizer
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="organizer-hint"
+            style="
+              display: none;
+              background: #a78bfa15;
+              border: 1px solid #a78bfa40;
+              border-radius: 10px;
+              padding: 12px 14px;
+              font-size: 12px;
+              color: #a78bfa;
+              margin-bottom: 12px;
+            "
+          >
+            🏆 <strong>Organizer mode:</strong> You'll see only events where you
+            are the assigned organizer. You can scan QR codes, track attendance,
+            and issue certificates.
+          </div>
+
+          <button class="btn btn-primary" id="btn-login" onclick="doLogin()">
+            Sign In →
+          </button>
+          <div class="link-text">
+            New student?
+            <a onclick="showScreen('screen-register')">Create Account</a>
+            &nbsp;|&nbsp; <a href="index.html">← Home</a><br /><br /><a
+              href="admin.html"
+              style="color: var(--warn)"
+              >Admin Login</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PARTICIPANT DASHBOARD ══ -->
+    <div class="screen" id="screen-dashboard">
+      <nav class="navbar">
+        <div class="nav-left"></div>
+        <div class="nav-right">
+          <div class="nav-user">Hello, <span id="st-name">Student</span></div>
+          <button
+            id="btn-switch-organizer"
+            style="
+              display: none;
+              align-items: center;
+              gap: 6px;
+              background: #a78bfa20;
+              border: 1px solid #a78bfa50;
+              color: #a78bfa;
+              padding: 6px 14px;
+              border-radius: 8px;
+              font-size: 12px;
+              font-weight: 600;
+              cursor: pointer;
+              font-family: &quot;Outfit&quot;, sans-serif;
+              transition: all 0.2s;
+            "
+            onclick="switchToOrganizerView()"
+          >
+            🏆 Organizer Portal
+          </button>
+          <a class="nav-home" href="index.html">Home</a>
+          <button class="btn-logout" onclick="doLogout()">Logout</button>
+        </div>
+      </nav>
+      <div class="main-wrap narrow">
+        <div class="profile-box">
+          <div class="profile-avatar">🎓</div>
+          <div class="profile-info">
+            <div class="profile-name" id="prof-name">—</div>
+            <div class="profile-chips">
+              <div class="profile-chip">
+                Roll: <span id="prof-roll">—</span>
+              </div>
+              <div class="profile-chip">
+                Branch: <span id="prof-branch">—</span>
+              </div>
+              <div class="profile-chip">
+                College: <span id="prof-college">—</span>
+              </div>
+              <div class="profile-chip">
+                Phone: <span id="prof-phone">—</span>
+              </div>
+              <div class="profile-chip">
+                Email: <span id="prof-email">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button
+            class="tab active"
+            id="tab-events-btn"
+            onclick="switchTab('events')"
+          >
+            🎉 Available Events
+          </button>
+          <button class="tab" id="tab-myregs-btn" onclick="switchTab('myregs')">
+            📋 My Registrations
+          </button>
+          <button class="tab" id="tab-certs-btn" onclick="switchTab('certs')">
+            🎓 My Certificates
+          </button>
+        </div>
+
+        <!-- AVAILABLE EVENTS -->
+        <div id="tab-events">
+          <div class="page-header">
+            <h1>Available Events</h1>
+            <p>
+              Browse and register for upcoming college events. You can register
+              for each event only once.
+            </p>
+          </div>
+          <input
+            type="text"
+            class="search-bar"
+            id="ev-search"
+            placeholder="🔍  Search events by name or venue…"
+            oninput="filterEvents()"
+          />
+          <div class="events-grid" id="events-grid">
+            <div class="loading-state">Loading events…</div>
+          </div>
+        </div>
+
+        <!-- MY REGISTRATIONS -->
+        <div id="tab-myregs" style="display: none">
+          <div class="page-header">
+            <h1>My Registrations</h1>
+            <p>
+              All events you've signed up for. Click the QR button to
+              view/download your ticket.
+            </p>
+          </div>
+          <div id="my-regs-list"><div class="loading-state">Loading…</div></div>
+        </div>
+
+        <!-- MY CERTIFICATES -->
+        <div id="tab-certs" style="display: none">
+          <div class="page-header">
+            <h1>My Certificates</h1>
+            <p>Certificates awarded to you after attended events.</p>
+          </div>
+          <div id="my-certs-list">
+            <div class="loading-state">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ORGANIZER DASHBOARD ══ -->
+    <div class="screen" id="screen-organizer">
+      <nav class="navbar">
+        <div class="nav-left">
+          <span>
+            class="nav-badge" style=" background: #a78bfa20; border-color:
+            #a78bfa40; color: #a78bfa; " >ORGANIZER</span
+          >
+        </div>
+        <div class="nav-right">
+          <div class="nav-user">
+            Hello, <span id="org-name">Organizer</span>
+          </div>
+          <button
+            class="btn-logout"
+            onclick="switchToParticipantView()"
+            style="border-color: #4f6ef740; color: var(--accent)"
+          >
+            🎓 Participant View
+          </button>
+          <a class="nav-home" href="index.html">Home</a>
+          <button class="btn-logout" onclick="doLogout()">Logout</button>
+        </div>
+      </nav>
+      <div class="main-wrap narrow">
+        <div class="org-banner">
+          <div class="org-banner-icon">🏆</div>
+          <div class="org-banner-text">
+            <div class="org-banner-title">Organizer Portal</div>
+            <div class="org-banner-sub">
+              Manage your assigned events, scan QR tickets, track attendance,
+              and issue certificates.
+            </div>
+          </div>
+        </div>
+
+        <!-- Event selector -->
+        <div class="filter-row" style="margin-bottom: 22px">
+          <label>Select Event:</label>
+          <select id="org-event-select" onchange="onOrgEventChange()">
+            <option value="">— Select your event —</option>
+          </select>
+        </div>
+
+        <div id="org-content" style="display: none">
+          <div class="org-tabs">
+            <button
+              class="org-tab active"
+              id="orgtab-scanner-btn"
+              onclick="switchOrgTab('scanner')"
+            >
+              📷 QR Scanner
+            </button>
+            <button
+              class="org-tab"
+              id="orgtab-attendance-btn"
+              onclick="switchOrgTab('attendance')"
+            >
+              📋 Attendance
+            </button>
+            <button
+              class="org-tab"
+              id="orgtab-results-btn"
+              onclick="switchOrgTab('results')"
+            >
+              🏅 Results
+            </button>
+            <button
+              class="org-tab"
+              id="orgtab-certs-btn"
+              onclick="switchOrgTab('certs')"
+            >
+              🎓 Certificates
+            </button>
+          </div>
+
+          <!-- SCANNER -->
+          <div id="orgtab-scanner">
+            <div class="page-header">
+              <h1>QR Scanner</h1>
+              <p>
+                Upload or paste a participant's QR token to mark attendance.
+              </p>
+            </div>
+            <div style="max-width: 560px">
+              <div
+                class="scanner-box student-scanner"
+                onclick="document.getElementById('org-qr-file').click()"
+              >
+                <div class="scanner-icon">📷</div>
+                <div
+                  style="font-size: 15px; font-weight: 600; margin-bottom: 6px"
+                >
+                  Upload QR Code Image
+                </div>
+                <div style="font-size: 13px; color: var(--sub)">
+                  Click to choose a participant's downloaded QR ticket
+                </div>
+              </div>
+              <input
+                type="file"
+                id="org-qr-file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                style="display: none"
+                onchange="orgHandleQRUpload(event)"
+              />
+              <div class="divider">
+                <div class="divider-line"></div>
+                <div class="divider-text">or enter manually</div>
+                <div class="divider-line"></div>
+              </div>
+              <div class="field">
+                <label>QR Token</label
+                ><textarea
+                  id="org-manual-qr"
+                  placeholder="Paste the QR token (e.g. QR-1234567-98765)…"
+                ></textarea>
+              </div>
+              <button
+                class="btn btn-success"
+                id="btn-org-scan"
+                onclick="orgProcessManualQR()"
+              >
+                Mark Attendance →
+              </button>
+              <div id="org-scan-result" style="margin-top: 20px"></div>
+            </div>
+          </div>
+
+          <!-- ATTENDANCE -->
+          <div id="orgtab-attendance" style="display: none">
+            <div class="page-header">
+              <h1>Attendance</h1>
+              <p>Live attendance list for your event.</p>
+            </div>
+            <button
+              class="btn btn-ghost btn-sm"
+              onclick="loadOrgAttendance()"
+              style="margin-bottom: 16px"
+            >
+              ↻ Refresh
+            </button>
+            <div
+              id="org-attendance-stats"
+              class="stats-row three-col"
+              style="display: none"
+            >
+              <div class="stat-card plain">
+                <div
+                  class="stat-num sm"
+                  id="oas-total"
+                  style="color: var(--accent)"
+                >
+                  0
+                </div>
+                <div class="stat-label">Total</div>
+              </div>
+              <div class="stat-card plain">
+                <div
+                  class="stat-num sm"
+                  id="oas-attended"
+                  style="color: var(--accent2)"
+                >
+                  0
+                </div>
+                <div class="stat-label">Attended</div>
+              </div>
+              <div class="stat-card plain">
+                <div
+                  class="stat-num sm"
+                  id="oas-pending"
+                  style="color: var(--warn)"
+                >
+                  0
+                </div>
+                <div class="stat-label">Pending</div>
+              </div>
+            </div>
+            <div id="org-attendance-wrap"></div>
+          </div>
+
+          <!-- RESULTS -->
+          <div id="orgtab-results" style="display: none">
+            <div class="page-header">
+              <h1>Results</h1>
+              <p>Assign certificate types to attended participants.</p>
+            </div>
+            <div id="org-results-list"></div>
+            <button
+              class="btn btn-primary"
+              id="btn-submit-results"
+              onclick="submitOrgResults()"
+              style="display: none; max-width: 280px; margin-top: 16px"
+            >
+              Save Results →
+            </button>
+          </div>
+
+          <!-- CERTIFICATES -->
+          <div id="orgtab-certs" style="display: none">
+            <div class="page-header">
+              <h1>Certificates</h1>
+              <p>
+                Download or print individual certificates. Each includes the
+                student's name, roll no, and branch.
+              </p>
+            </div>
+            <div id="org-certs-list"></div>
+            <div id="btn-print-certs" style="display: none; margin-top: 16px">
+              <button
+                class="btn btn-warn"
+                onclick="printCertificates()"
+                style="
+                  max-width: 220px;
+                  display: inline-block;
+                  margin-right: 10px;
+                "
+              >
+                🖨 Print All
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="org-no-events" style="display: none">
+          <div class="empty">
+            <div class="empty-icon">📭</div>
+            <div class="empty-text">
+              You are not the organizer for any events yet.<br />
+              <small style="color: var(--muted)">
+                Register as Organizer for an event from the Participant view. </small
+              ><br /><br />
+              <button
+                class="btn btn-ghost btn-sm"
+                onclick="switchToParticipantView()"
+                style="
+                  width: auto;
+                  display: inline-block;
+                  border-color: #4f6ef740;
+                  color: var(--accent);
+                "
+              >
+                🎓 Go to Participant View →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ QR MODAL ══ -->
+    <div class="modal-overlay" id="modal-qr">
+      <div class="modal">
+        <button class="btn-close" onclick="closeModal('modal-qr')">×</button>
+        <div class="modal-title">🎟 Your QR Ticket</div>
+        <div class="qr-box">
+          <div id="qr-canvas-wrap"></div>
+          <div class="qr-token" id="qr-token-display"></div>
+        </div>
+        <button class="btn btn-ghost" onclick="downloadQR()">
+          ⬇ Download QR
+        </button>
+        <p
+          style="
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 12px;
+            text-align: center;
+          "
+        >
+          Show this QR to the event organizer at entry
+        </p>
+      </div>
+    </div>
+
+    <!-- ══ REGISTER ROLE MODAL ══ -->
+    <div class="modal-overlay" id="modal-register-role">
+      <div class="modal">
+        <button class="btn-close" onclick="closeModal('modal-register-role')">
+          ×
+        </button>
+        <div class="modal-title" id="reg-modal-title">Register for Event</div>
+        <p
+          style="font-size: 13px; color: var(--sub); margin-bottom: 20px"
+          id="reg-modal-event"
+        ></p>
+        <div class="role-selector">
+          <button
+            class="role-btn"
+            id="reg-role-participant"
+            onclick="setRegRole('participant')"
+          >
+            <span class="role-icon">🎓</span>Participant<br /><small
+              style="font-weight: 400; color: var(--muted)"
+              >Get QR ticket</small
+            >
+          </button>
+          <button
+            class="role-btn"
+            id="reg-role-organizer"
+            onclick="setRegRole('organizer')"
+          >
+            <span class="role-icon">🏆</span>Organizer<br /><small
+              style="font-weight: 400; color: var(--muted)"
+              >Manage event</small
+            >
+          </button>
+        </div>
+        <div
+          id="reg-role-info"
+          style="
+            margin: 12px 0;
+            font-size: 12px;
+            color: var(--sub);
+            min-height: 20px;
+          "
+        ></div>
+        <button
+          class="btn btn-primary"
+          id="btn-confirm-register"
+          onclick="confirmRegister()"
+          disabled
+        >
+          Confirm Registration →
+        </button>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <script src="student.js"></script>
+  </body>
+</html>
