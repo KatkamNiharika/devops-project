@@ -165,17 +165,21 @@
 
     <!-- ══ LOGIN ══ -->
     <div class="screen active" id="screen-login">
-      <div class="auth-wrap">
         <div class="auth-box">
           <div class="auth-logo"></div>
+
           <div class="auth-title">Student Sign In</div>
+
           <div class="auth-sub">
             Login and select your role for this session
+
           </div>
+
 
           <div class="field">
             <label>Email Address</label
             ><input type="email" id="sl-email" placeholder="you@email.com" />
+
           </div>
           <div class="field">
             <label>Password</label
@@ -231,27 +235,40 @@
               style="color: var(--warn)"
               >Admin Login</a
             >
+
           </div>
         </div>
+
       </div>
+
     </div>
+
 
     <!-- ══ PARTICIPANT DASHBOARD ══ -->
     <div class="screen" id="screen-dashboard">
+
       <nav class="navbar">
         <div class="nav-left"></div>
+
         <div class="nav-right">
+
           <div class="nav-user">Hello, <span id="st-name">Student</span></div>
+
           <button
+
             id="btn-switch-organizer"
             style="
               display: none;
               align-items: center;
+
               gap: 6px;
               background: #a78bfa20;
               border: 1px solid #a78bfa50;
+
               color: #a78bfa;
+
               padding: 6px 14px;
+
               border-radius: 8px;
               font-size: 12px;
               font-weight: 600;
@@ -274,32 +291,47 @@
             <div class="profile-name" id="prof-name">—</div>
             <div class="profile-chips">
               <div class="profile-chip">
+
                 Roll: <span id="prof-roll">—</span>
+
               </div>
+
               <div class="profile-chip">
                 Branch: <span id="prof-branch">—</span>
+
               </div>
+
               <div class="profile-chip">
+
                 College: <span id="prof-college">—</span>
+
               </div>
               <div class="profile-chip">
+
                 Phone: <span id="prof-phone">—</span>
+
               </div>
+
               <div class="profile-chip">
+
                 Email: <span id="prof-email">—</span>
               </div>
             </div>
           </div>
         </div>
 
+
         <div class="tabs">
           <button
             class="tab active"
             id="tab-events-btn"
+
             onclick="switchTab('events')"
           >
+
             🎉 Available Events
           </button>
+
           <button class="tab" id="tab-myregs-btn" onclick="switchTab('myregs')">
             📋 My Registrations
           </button>
@@ -330,28 +362,43 @@
         </div>
 
         <!-- MY REGISTRATIONS -->
+
         <div id="tab-myregs" style="display: none">
+
           <div class="page-header">
+
             <h1>My Registrations</h1>
+
             <p>
               All events you've signed up for. Click the QR button to
+
               view/download your ticket.
+
             </p>
+
           </div>
+
           <div id="my-regs-list"><div class="loading-state">Loading…</div></div>
+
         </div>
 
+
         <!-- MY CERTIFICATES -->
+
         <div id="tab-certs" style="display: none">
           <div class="page-header">
+
             <h1>My Certificates</h1>
             <p>Certificates awarded to you after attended events.</p>
           </div>
+
           <div id="my-certs-list">
             <div class="loading-state">Loading…</div>
           </div>
+
         </div>
       </div>
+
     </div>
 
     <!-- ══ ORGANIZER DASHBOARD ══ -->
@@ -400,17 +447,25 @@
 
         <div id="org-content" style="display: none">
           <div class="org-tabs">
+
             <button
+
               class="org-tab active"
+
               id="orgtab-scanner-btn"
+
               onclick="switchOrgTab('scanner')"
             >
+
               📷 QR Scanner
+
             </button>
             <button
               class="org-tab"
+
               id="orgtab-attendance-btn"
               onclick="switchOrgTab('attendance')"
+
             >
               📋 Attendance
             </button>
@@ -459,29 +514,40 @@
                 accept="image/png,image/jpeg,image/webp,image/gif"
                 style="display: none"
                 onchange="orgHandleQRUpload(event)"
+
               />
               <div class="divider">
+
                 <div class="divider-line"></div>
                 <div class="divider-text">or enter manually</div>
+
                 <div class="divider-line"></div>
+
               </div>
+
               <div class="field">
                 <label>QR Token</label
+
                 ><textarea
+
                   id="org-manual-qr"
                   placeholder="Paste the QR token (e.g. QR-1234567-98765)…"
                 ></textarea>
+
               </div>
               <button
                 class="btn btn-success"
                 id="btn-org-scan"
+
                 onclick="orgProcessManualQR()"
               >
                 Mark Attendance →
               </button>
+
               <div id="org-scan-result" style="margin-top: 20px"></div>
             </div>
           </div>
+
 
           <!-- ATTENDANCE -->
           <div id="orgtab-attendance" style="display: none">
@@ -507,10 +573,12 @@
                   id="oas-total"
                   style="color: var(--accent)"
                 >
+
                   0
                 </div>
                 <div class="stat-label">Total</div>
               </div>
+
               <div class="stat-card plain">
                 <div
                   class="stat-num sm"
