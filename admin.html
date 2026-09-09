@@ -237,36 +237,48 @@
               <p>
                 Organizers submit results — you review and approve certificates
                 before students can download them.
-              </p>
             </div>
           </div>
+
 
           <!-- Sub-tabs -->
           <div
             style="
               display: flex;
+
               gap: 6px;
               margin-bottom: 20px;
               background: var(--surface);
+
               border: 1px solid var(--border);
+
               border-radius: 10px;
+
               padding: 4px;
             "
           >
             <button
+
               id="cert-sub-pending-btn"
+
               onclick="switchCertTab('pending')"
+
               style="
                 flex: 1;
+
                 padding: 8px 14px;
+
                 border: none;
                 border-radius: 7px;
                 background: var(--card);
                 color: var(--text);
+
                 font-family: Outfit, sans-serif;
+
                 font-size: 13px;
                 font-weight: 600;
                 cursor: pointer;
+
               "
             >
               ⏳ Pending
@@ -300,6 +312,7 @@
               "
             >
               ✅ Approved
+
               <span
                 id="cert-approved-count"
                 style="
